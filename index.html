@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Immersive World</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: black; }
+    canvas { display: block; }
+    /* subtle overlay glow */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.7) 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="vignette"></div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    // Scene
+    const scene = new THREE.Scene();
+    // Camera (POV style)
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(0, 1.6, 5); // human eye height feel
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.body.appendChild(renderer.domElement);
+    // Ambient + glow lighting
+    const ambient = new THREE.AmbientLight(0x222222);
+    scene.add(ambient);
+    const pointLight = new THREE.PointLight(0x00ffff, 2, 50);
+    pointLight.position.set(0, 3, 2);
+    scene.add(pointLight);
+    // AI Core (floating hologram)
+    const coreGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const coreMaterial = new THREE.MeshStandardMaterial({
+      color: 0x00ffff,
+      emissive: 0x00ffff,
+      emissiveIntensity: 1,
+      wireframe: true
+    });
+    const aiCore = new THREE.Mesh(coreGeometry, coreMaterial);
+    scene.add(aiCore);
+    // Particle field (digital space feel)
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particleCount = 1500;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i++) {
+      positions[i] = (Math.random() - 0.5) * 50;
+    }
+    particlesGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
+    const particlesMaterial = new THREE.PointsMaterial({
+      color: 0x00ffff,
+      size: 0.05
+    });
+    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particles);
+    // Mouse movement (POV drift feel)
+    let mouseX = 0;
+    let mouseY = 0;
+    document.addEventListener("mousemove", (event) => {
+      mouseX = (event.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (event.clientY / window.innerHeight - 0.5) * 2;
+    });
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      // AI core rotation + pulse
+      aiCore.rotation.y += 0.01;
+      aiCore.rotation.x += 0.005;
+      aiCore.scale.setScalar(1 + Math.sin(Date.now() * 0.002) * 0.1);
+      // camera subtle POV movement
+      camera.position.x += (mouseX - camera.position.x) * 0.02;
+      camera.position.y = 1.6 + mouseY * 0.3;
+      camera.lookAt(0, 0, 0);
+      // particle rotation
+      particles.rotation.y += 0.0005;
+      renderer.render(scene, camera);
+    }
+    animate();
+    // Resize handling
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
