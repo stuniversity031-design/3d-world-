@@ -1,101 +1,1155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>AI Immersive World</title>
-  <style>
-    body { margin: 0; overflow: hidden; background: black; }
-    canvas { display: block; }
-    /* subtle overlay glow */
-    .vignette {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background: radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.7) 100%);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA — Lead Intelligence</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,500;1,400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#1a0f08;font-family:'Inter',sans-serif;}
+
+/* ═══ SCENE ROOT ═══ */
+#scene{position:fixed;inset:0;z-index:1;}
+
+/* ─── CEILING ─── */
+.ceiling{position:absolute;top:0;left:0;right:0;height:9%;
+  background:linear-gradient(180deg,#1e1208 0%,#261608 60%,#1a1006 100%);}
+/* Recessed ceiling light panels */
+.ceil-light{position:absolute;top:1%;border-radius:2px;
+  background:rgba(255,235,180,0.06);box-shadow:0 2px 30px rgba(255,210,120,0.18);}
+.ceil-light-1{left:20%;width:15%;height:2%;}
+.ceil-light-2{right:12%;width:12%;height:2%;}
+/* Ceiling coffer detail top-right */
+.ceil-coffer{position:absolute;top:0;right:0;width:38%;height:14%;
+  background:linear-gradient(225deg,#2a1a0a 0%,#1e1208 100%);
+  border-left:2px solid rgba(180,120,50,0.15);border-bottom:2px solid rgba(180,120,50,0.1);}
+.ceil-coffer-inner{position:absolute;inset:8px;border:1px solid rgba(180,120,50,0.08);}
+
+/* ─── BACK WALL (walnut paneling) ─── */
+.wall-back{position:absolute;top:9%;left:0;right:0;bottom:30%;
+  background:linear-gradient(180deg,#2a1508 0%,#321a0a 40%,#2e1808 100%);}
+/* Vertical panel seams */
+.panel-seam{position:absolute;top:0;bottom:0;width:1px;background:rgba(0,0,0,0.3);}
+/* Horizontal rail */
+.panel-rail{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,#1a0c04,#4a2a10,#3a2008,#1a0c04);}
+
+/* ─── LEFT WALL ─── */
+.wall-left{position:absolute;top:0;left:0;width:7%;bottom:0;
+  background:linear-gradient(90deg,#120a04 0%,#2a1608 80%,#321c0a 100%);}
+
+/* ─── RIGHT WALL (walnut paneling, darker) ─── */
+.wall-right{position:absolute;top:9%;right:0;width:36%;bottom:30%;
+  background:linear-gradient(270deg,#1a0c05 0%,#2e1a08 50%,#281508 100%);}
+/* Wood grain lines on right wall */
+.wood-grain{position:absolute;top:0;bottom:0;left:0;right:0;
+  background:repeating-linear-gradient(175deg,transparent 0px,transparent 40px,rgba(0,0,0,0.04) 40px,rgba(0,0,0,0.04) 41px);}
+
+/* ─── WINDOW OPENING ─── */
+.window-zone{position:absolute;top:9%;left:7%;width:57%;bottom:30%;}
+/* Sky through window */
+.sky-bg{position:absolute;inset:0;
+  background:linear-gradient(180deg,
+    #8fa8c8 0%,
+    #9ab4cc 8%,
+    #a8bdd4 18%,
+    #b8cad8 30%,
+    #8ea5bf 50%,
+    #6a8daa 65%,
+    #4a6b88 78%,
+    #2a4560 88%,
+    #1a3050 100%
+  );}
+/* Horizon warmth near water */
+.sky-horizon{position:absolute;bottom:0;left:0;right:0;height:35%;
+  background:linear-gradient(180deg,transparent 0%,rgba(180,140,100,0.12) 40%,rgba(140,100,70,0.18) 100%);}
+
+/* ─── WINDOW FRAME ─── */
+.win-frame-top{position:absolute;top:9%;left:7%;width:57%;height:1.2%;
+  background:linear-gradient(180deg,#3a2010,#4a2a18);}
+.win-frame-left{position:absolute;top:9%;left:7%;width:1.2%;bottom:30%;
+  background:linear-gradient(90deg,#2a1808,#4a2a18);}
+.win-frame-right{position:absolute;top:9%;left:63.8%;width:1%;bottom:30%;
+  background:linear-gradient(270deg,#2a1808,#4a2a18);}
+/* Center mullion */
+.win-mullion{position:absolute;top:9%;left:35%;width:1%;bottom:30%;
+  background:linear-gradient(90deg,#2a1808,#4a2a18,#2a1808);}
+/* Horizontal mid-rail */
+.win-rail-h{position:absolute;top:47%;left:7%;width:57%;height:0.6%;
+  background:linear-gradient(180deg,#2a1808,#3a2010);}
+
+/* ─── SECOND WINDOW (right wall, partial) ─── */
+.win2-frame{position:absolute;top:12%;right:0;width:16%;height:42%;
+  background:rgba(140,170,200,0.25);
+  border:3px solid #2a1808;border-right:none;}
+.win2-sky{position:absolute;inset:0;
+  background:linear-gradient(180deg,#7a9ab8 0%,#5a7a98 60%,#3a5878 100%);opacity:0.7;}
+/* Man working silhouette in right window */
+.win2-figure{position:absolute;bottom:0;right:8%;width:40%;height:70%;
+  background:rgba(20,40,70,0.5);border-radius:30% 30% 0 0;}
+
+/* ─── WALL SCONCE ─── */
+.sconce{position:absolute;right:19.5%;top:18%;}
+.sconce-back{width:22px;height:44px;background:linear-gradient(180deg,#b8902a,#8a6818);border-radius:3px 3px 1px 1px;}
+.sconce-arm{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:3px;height:18px;background:#7a5a14;}
+.sconce-glow{position:absolute;top:-8px;left:-55px;width:140px;height:120px;
+  background:radial-gradient(ellipse at 50% 40%,rgba(255,210,120,0.22) 0%,rgba(255,180,80,0.08) 40%,transparent 70%);
+  pointer-events:none;}
+
+/* ─── FLOOR ─── */
+.floor{position:absolute;bottom:0;left:0;right:0;height:30%;
+  background:linear-gradient(180deg,#c8b898 0%,#b8a888 30%,#a89878 60%,#907858 100%);}
+.floor-shadow{position:absolute;top:0;left:0;right:0;height:40%;
+  background:linear-gradient(180deg,rgba(0,0,0,0.45) 0%,transparent 100%);}
+
+/* ─── DESK ─── */
+.desk{position:absolute;bottom:0;left:0;right:0;height:30%;}
+/* Desk back edge (top face) */
+.desk-top-face{position:absolute;top:0;left:0;right:0;height:22%;
+  background:linear-gradient(180deg,#4a2810 0%,#3e2010 40%,#341a0c 100%);
+  box-shadow:0 -3px 0 #5a3218,0 0 0 0.5px rgba(255,255,255,0.05);}
+.desk-top-shine{position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 5%,rgba(180,120,60,0.4) 20%,rgba(220,160,80,0.6) 45%,rgba(180,120,60,0.4) 70%,transparent 95%);}
+/* Desk front face */
+.desk-front{position:absolute;top:22%;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,#2e1608 0%,#221008 50%,#180c04 100%);}
+/* Desk leather mat */
+.desk-mat{position:absolute;top:2%;left:28%;right:35%;height:16%;
+  background:#1a1a1a;border-radius:2px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.6);}
+/* AURA folder */
+.aura-folder{position:absolute;top:3%;left:30%;width:14%;height:12%;cursor:pointer;
+  transition:transform 0.25s;z-index:10;}
+.aura-folder:hover{transform:translateY(-3px) rotate(-0.5deg);}
+.folder-leather{width:100%;height:100%;background:linear-gradient(135deg,#8b5e3c 0%,#7a4e2e 50%,#6a4020 100%);
+  border-radius:1px 1px 1px 1px;box-shadow:2px 3px 8px rgba(0,0,0,0.5);}
+.folder-paper{position:absolute;top:-3px;right:6px;left:6px;height:50%;
+  background:linear-gradient(180deg,#f5f0e8,#e8e0d0);border-radius:1px 1px 0 0;
+  box-shadow:0 -1px 3px rgba(0,0,0,0.2);}
+.folder-text{position:absolute;bottom:28%;left:0;right:0;text-align:center;
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:9px;
+  color:rgba(220,185,120,0.7);letter-spacing:2px;}
+/* Water glass */
+.water-glass{position:absolute;top:4%;left:44%;width:3%;height:14%;}
+/* Desk lamp */
+.desk-lamp{position:absolute;top:-35%;left:3%;width:9%;}
+
+/* ─── AURA AGENT (SVG portrait) ─── */
+#aura-agent{position:absolute;left:20%;width:38%;bottom:28%;z-index:5;
+  transition:transform 0.15s ease-out;}
+
+/* ─── MONITOR ─── */
+#monitor-wrap{position:absolute;right:5%;bottom:29%;width:25%;z-index:5;
+  transition:transform 0.12s ease-out;}
+.monitor-screen{width:100%;padding-bottom:63%;position:relative;
+  background:#030a18;
+  border:2.5px solid #0e1620;
+  border-radius:4px 4px 2px 2px;
+  box-shadow:0 0 50px rgba(20,80,220,0.25),0 15px 50px rgba(0,0,0,0.9),inset 0 0 0 1px rgba(255,255,255,0.03);}
+.monitor-bezel{position:absolute;inset:0;border-radius:3px;
+  background:linear-gradient(160deg,#03091a 0%,#050f28 100%);}
+.monitor-content{position:absolute;inset:4px;overflow:hidden;border-radius:1px;}
+.mon-stand{width:26%;height:18px;background:linear-gradient(180deg,#111,#080808);margin:0 auto;
+  clip-path:polygon(15% 0%,85% 0%,100% 100%,0% 100%);}
+.mon-base{width:44%;height:6px;background:#080808;margin:0 auto;border-radius:0 0 4px 4px;}
+/* Monitor UI */
+.mon-ui{width:100%;height:100%;background:linear-gradient(160deg,#020816,#040d22);
+  font-family:'Share Tech Mono',monospace;font-size:7px;color:#8abcf0;padding:6px;position:relative;}
+.mon-header{display:flex;align-items:center;gap:4px;padding-bottom:4px;
+  border-bottom:1px solid rgba(30,100,220,0.18);margin-bottom:5px;}
+.mon-logo{font-size:6.5px;color:#4a9ffc;letter-spacing:.08em;font-weight:600;}
+.mon-sep{color:rgba(80,140,220,0.3);margin:0 2px;}
+.mon-tag{font-size:5.5px;color:rgba(80,140,220,0.45);}
+.mon-live{width:5px;height:5px;border-radius:50%;background:#00e87a;margin-left:auto;
+  animation:pulse-green 2s infinite;}
+@keyframes pulse-green{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,232,122,0.4);}50%{opacity:.7;box-shadow:0 0 0 3px rgba(0,232,122,0);}}
+.mon-lead-row{display:flex;align-items:center;gap:3px;padding:2px 0;
+  border-bottom:1px solid rgba(20,80,180,0.1);}
+.m-score{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:5px;font-weight:700;flex-shrink:0;}
+.m-name{font-size:6px;color:#8ac0f0;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.m-budget{font-size:5.5px;color:#00d870;white-space:nowrap;}
+.m-sdot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.mon-chart{margin-top:4px;height:22px;position:relative;}
+/* Monitor chat panel (right side of monitor) */
+.mon-chat-panel{position:absolute;right:0;top:0;bottom:0;width:42%;
+  background:rgba(5,15,40,0.5);border-left:1px solid rgba(30,80,180,0.15);padding:5px 4px;}
+.mcp-title{font-size:5px;color:rgba(80,140,220,0.5);letter-spacing:.1em;margin-bottom:3px;text-transform:uppercase;}
+.mcp-msg{font-size:5.5px;color:rgba(160,200,255,0.7);line-height:1.5;margin-bottom:3px;
+  background:rgba(20,60,140,0.2);padding:3px 4px;border-radius:2px;
+  border-left:1px solid rgba(60,120,220,0.3);}
+.mcp-input{position:absolute;bottom:4px;left:4px;right:4px;
+  background:rgba(5,20,50,0.8);border:1px solid rgba(40,100,200,0.2);border-radius:2px;
+  padding:2px 4px;font-size:5px;color:rgba(120,180,255,0.4);font-family:'Share Tech Mono',monospace;}
+
+/* ─── FLOATING HOLO PANELS ─── */
+.holo-float{position:absolute;z-index:20;pointer-events:auto;}
+#panel-pipeline{left:0.5%;bottom:54%;width:16%;animation:fp-float 7s ease-in-out infinite;}
+@keyframes fp-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+#panel-actions{right:0.5%;bottom:54%;width:14%;animation:fa-float 8s ease-in-out infinite;}
+@keyframes fa-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+.holo-glass{background:rgba(3,12,32,0.88);border:1px solid rgba(50,130,255,0.2);
+  border-radius:4px;backdrop-filter:blur(20px);padding:9px 11px;position:relative;
+  box-shadow:0 6px 32px rgba(0,0,0,0.65),0 0 20px rgba(10,60,200,0.08),
+  inset 0 1px 0 rgba(255,255,255,0.04);}
+.holo-glass::before{content:'';position:absolute;top:0;left:10px;right:10px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(80,160,255,0.3),transparent);}
+.h-title{font-size:7px;color:rgba(80,160,255,0.5);letter-spacing:.18em;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;margin-bottom:7px;display:flex;align-items:center;gap:4px;}
+.h-dot{width:4px;height:4px;border-radius:50%;background:#3a8ffc;animation:pulse-green 2.5s infinite;}
+
+.pip-row{display:flex;align-items:center;gap:4px;margin-bottom:5px;}
+.pip-lbl{font-size:6.5px;color:rgba(160,200,255,0.5);width:52px;flex-shrink:0;
+  font-family:'Share Tech Mono',monospace;white-space:nowrap;overflow:hidden;}
+.pip-bg{flex:1;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;}
+.pip-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
+.pip-n{font-size:6.5px;color:rgba(80,150,255,0.5);width:10px;text-align:right;
+  font-family:'Share Tech Mono',monospace;}
+
+.holo-btn{display:flex;align-items:center;gap:5px;width:100%;padding:6px 8px;margin-bottom:4px;
+  background:rgba(12,45,110,0.35);border:1px solid rgba(50,120,240,0.18);border-radius:3px;
+  color:#88baf8;font-family:'Share Tech Mono',monospace;font-size:7px;cursor:pointer;
+  letter-spacing:.07em;transition:all .18s;text-align:left;}
+.holo-btn:hover{background:rgba(20,65,160,0.48);border-color:rgba(70,150,255,0.38);
+  color:#b0d4ff;box-shadow:0 0 12px rgba(40,110,255,0.18);}
+.holo-btn:active{transform:scale(.97);}
+.b-ic{font-size:9px;flex-shrink:0;} .b-lb{flex:1;} .b-st{font-size:5.5px;color:rgba(70,130,220,0.4);}
+
+/* ─── SPEECH BUBBLE ─── */
+#speech-wrap{position:absolute;left:20%;right:31%;bottom:55%;pointer-events:none;z-index:25;}
+#speech-bubble{background:rgba(3,10,26,0.94);border:1px solid rgba(60,140,255,0.22);
+  border-radius:10px 10px 10px 3px;padding:12px 16px;backdrop-filter:blur(16px);
+  box-shadow:0 8px 40px rgba(0,0,0,0.7),0 0 20px rgba(10,60,200,0.08);
+  min-height:42px;max-height:120px;overflow:hidden;}
+#sp-name{font-size:8px;color:rgba(80,160,255,0.5);letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:5px;font-family:'Share Tech Mono',monospace;}
+#sp-text{font-size:11.5px;color:#cce4ff;line-height:1.65;font-family:'Inter',sans-serif;font-weight:300;}
+#sp-text strong{color:#70c0ff;font-weight:500;}
+#tcursor{display:inline-block;width:6px;height:11px;background:#70c0ff;margin-left:1px;
+  animation:cblink .65s infinite;vertical-align:text-bottom;}
+@keyframes cblink{0%,100%{opacity:1;}50%{opacity:0;}}
+.think-row{display:flex;align-items:center;gap:4px;}
+.td{width:5px;height:5px;border-radius:50%;background:rgba(80,160,255,0.55);animation:tbounce 1.2s infinite;}
+.td:nth-child(2){animation-delay:.2s;}.td:nth-child(3){animation-delay:.4s;}
+@keyframes tbounce{0%,60%,100%{transform:translateY(0);opacity:.3;}30%{transform:translateY(-5px);opacity:1;}}
+.tlbl{font-size:8px;color:rgba(80,160,255,0.38);font-family:'Share Tech Mono',monospace;margin-left:5px;}
+
+/* ─── CHAT HISTORY ─── */
+#chat-history{position:absolute;left:20%;right:31%;bottom:30%;max-height:20%;
+  overflow-y:auto;z-index:22;display:flex;flex-direction:column;gap:5px;scrollbar-width:none;}
+#chat-history::-webkit-scrollbar{display:none;}
+.ch-user{align-self:flex-end;background:rgba(12,42,110,0.55);border:1px solid rgba(40,100,220,0.22);
+  border-radius:7px 7px 1px 7px;padding:4px 10px;font-size:10px;color:#88b4f0;
+  font-family:'Inter',sans-serif;max-width:82%;animation:msg-up .28s ease;}
+@keyframes msg-up{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
+
+/* ─── QUICK CHIPS ─── */
+#quick-chips{position:absolute;left:20%;right:31%;bottom:26.5%;z-index:22;display:flex;gap:4px;flex-wrap:wrap;}
+.chip{background:rgba(4,12,36,0.75);border:1px solid rgba(40,100,210,0.18);border-radius:18px;
+  padding:3px 9px;font-family:'Share Tech Mono',monospace;font-size:7.5px;
+  color:rgba(90,160,255,0.52);cursor:pointer;transition:all .18s;white-space:nowrap;}
+.chip:hover{border-color:rgba(70,150,255,0.4);color:#88c4ff;background:rgba(12,42,110,0.48);}
+
+/* ─── COMMS BAR ─── */
+#comms-bar{position:absolute;left:20%;right:31%;bottom:24%;z-index:22;display:flex;gap:5px;}
+#comms-input{flex:1;background:rgba(3,12,32,0.9);border:1px solid rgba(50,120,240,0.22);
+  border-radius:3px;padding:7px 12px;color:#b0d4ff;font-family:'Inter',sans-serif;font-size:11px;
+  outline:none;backdrop-filter:blur(8px);}
+#comms-input:focus{border-color:rgba(70,150,255,0.45);box-shadow:0 0 12px rgba(20,90,255,0.14);}
+#comms-input::placeholder{color:rgba(70,120,190,0.3);}
+#comms-send{background:rgba(18,60,170,0.58);border:1px solid rgba(50,130,255,0.3);border-radius:3px;
+  padding:7px 14px;color:#60aafc;font-family:'Share Tech Mono',monospace;font-size:8.5px;
+  cursor:pointer;letter-spacing:.09em;transition:all .18s;white-space:nowrap;}
+#comms-send:hover{background:rgba(25,80,210,0.68);box-shadow:0 0 16px rgba(40,120,255,0.3);}
+
+/* ─── STATUS ─── */
+#aura-status{position:absolute;left:20%;bottom:29%;z-index:22;display:flex;align-items:center;gap:5px;pointer-events:none;}
+.ast-dot{width:5px;height:5px;border-radius:50%;background:#3a8ffc;animation:pulse-green 2s infinite;}
+.ast-lbl{font-size:7px;color:rgba(50,120,210,0.45);font-family:'Share Tech Mono',monospace;letter-spacing:.14em;}
+
+/* ─── OVERLAYS ─── */
+#scanlines{position:fixed;inset:0;z-index:60;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.018) 2px,rgba(0,0,0,.018) 4px);}
+#vignette{position:fixed;inset:0;z-index:7;pointer-events:none;
+  background:radial-gradient(ellipse 110% 90% at 50% 50%,transparent 35%,rgba(0,0,0,.5) 100%);}
+/* Ambient warm from lamp */
+#lamp-ambient{position:fixed;bottom:28%;left:0;width:25%;height:50%;pointer-events:none;z-index:6;
+  background:radial-gradient(ellipse at 15% 80%,rgba(255,195,80,0.08) 0%,transparent 60%);}
+
+/* ─── NOTIFICATIONS ─── */
+#notifs{position:fixed;top:14px;right:14px;z-index:300;display:flex;flex-direction:column;gap:5px;}
+.notif{background:rgba(3,10,26,0.97);border:1px solid rgba(40,110,220,0.3);border-radius:4px;
+  padding:8px 12px;font-family:'Share Tech Mono',monospace;font-size:8.5px;color:#78b0f8;
+  max-width:230px;animation:notif-in .28s ease;box-shadow:0 4px 20px rgba(0,0,0,0.6);}
+.notif-t{font-size:7.5px;color:#00d870;letter-spacing:.1em;margin-bottom:2px;}
+@keyframes notif-in{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}
+
+/* ─── MODALS ─── */
+#lead-modal,#intake-modal,#detail-modal{position:fixed;inset:0;z-index:200;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);}
+#lead-modal.open,#intake-modal.open,#detail-modal.open{display:flex;}
+.modal-box{background:rgba(3,10,24,0.98);border:1px solid rgba(40,110,220,0.25);
+  border-radius:5px;font-family:'Share Tech Mono',monospace;
+  box-shadow:0 30px 100px rgba(0,0,0,0.9);animation:emerge .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes emerge{from{opacity:0;transform:scale(.88);}to{opacity:1;transform:scale(1);}}
+#lead-box{width:570px;max-width:96vw;}
+#intake-box{width:490px;max-width:96vw;}
+#detail-box{width:520px;max-width:96vw;}
+.mh{display:flex;align-items:center;gap:7px;padding:11px 15px;
+  border-bottom:1px solid rgba(40,110,220,0.12);}
+.mh-title{font-size:8.5px;color:#3a8ffc;letter-spacing:.16em;text-transform:uppercase;flex:1;}
+.mh-close{background:none;border:none;color:rgba(70,130,200,0.45);font-size:16px;cursor:pointer;}
+.mh-close:hover{color:#a0c8f8;}
+#lead-table{width:100%;border-collapse:collapse;}
+#lead-table th{font-size:6.5px;color:rgba(50,120,210,0.45);letter-spacing:.14em;text-transform:uppercase;
+  padding:5px 11px;text-align:left;border-bottom:1px solid rgba(40,110,220,0.1);}
+#lead-table td{padding:6px 11px;font-size:8.5px;color:rgba(160,200,255,0.8);
+  border-bottom:1px solid rgba(255,255,255,0.022);}
+#lead-table tr:hover td{background:rgba(20,65,170,0.1);cursor:pointer;}
+.sc-cell{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:7.5px;font-weight:700;}
+.stg-badge{display:inline-block;padding:2px 6px;border-radius:2px;font-size:6.5px;letter-spacing:.07em;}
+.ib-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:13px 15px;}
+.ib-f label{display:block;font-size:7px;color:rgba(50,120,210,0.55);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;}
+.ib-f input,.ib-f select{width:100%;background:rgba(3,14,40,0.85);border:1px solid rgba(40,110,220,0.18);
+  border-radius:2px;padding:5px 9px;color:#98c4f8;font-family:'Share Tech Mono',monospace;font-size:8.5px;outline:none;}
+.ib-f input:focus,.ib-f select:focus{border-color:rgba(60,140,255,0.4);}
+.ib-f select option{background:#030a1e;}
+.ib-full{grid-column:span 2;}
+.ib-btns{display:flex;gap:7px;padding:9px 15px;border-top:1px solid rgba(40,110,220,0.1);}
+.ib-cancel{flex:1;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);
+  border-radius:2px;padding:6px;color:rgba(120,165,220,0.45);font-family:'Share Tech Mono',monospace;font-size:7.5px;cursor:pointer;}
+.ib-submit{flex:2;background:rgba(14,55,160,0.5);border:1px solid rgba(50,130,255,0.3);
+  border-radius:2px;padding:6px;color:#58a4fc;font-family:'Share Tech Mono',monospace;font-size:8.5px;cursor:pointer;letter-spacing:.09em;transition:all .18s;}
+.ib-submit:hover{background:rgba(20,75,210,0.6);box-shadow:0 0 16px rgba(40,120,255,0.25);}
+.dsh{display:flex;align-items:center;gap:14px;padding:14px 15px;}
+.dsc{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;}
+.dsc svg{position:absolute;inset:0;} .dsc-n{position:relative;z-index:1;font-size:14px;font-weight:700;}
+.dn{font-size:13px;color:#b8e0ff;letter-spacing:.03em;} .dco{font-size:9px;color:rgba(70,140,255,0.55);margin-top:1px;}
+.det-grid{display:grid;grid-template-columns:1fr 1fr;padding:0 15px 10px;}
+.det-cell{padding:5px 0;border-bottom:1px solid rgba(40,110,220,0.07);}
+.det-cell:nth-child(odd){border-right:1px solid rgba(40,110,220,0.07);padding-right:14px;}
+.det-cell:nth-child(even){padding-left:14px;}
+.dcl{font-size:6.5px;color:rgba(50,110,200,0.45);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.dcv{font-size:8.5px;color:#88b4f0;word-break:break-all;}
+.dnotes{margin:0 15px 10px;padding:7px 11px;background:rgba(12,50,120,0.12);
+  border:1px solid rgba(40,110,220,0.09);border-radius:3px;font-size:8.5px;
+  color:rgba(130,185,255,0.65);line-height:1.55;}
+.dst-wrap{padding:0 15px 9px;}
+.dst-sel{width:100%;background:rgba(3,14,40,0.85);border:1px solid rgba(40,110,220,0.18);
+  border-radius:2px;padding:5px 9px;color:#98c4f8;font-family:'Share Tech Mono',monospace;font-size:8.5px;outline:none;}
+.det-acts{display:flex;gap:5px;padding:9px 15px;border-top:1px solid rgba(40,110,220,0.09);}
+.det-btn{flex:1;padding:6px 2px;background:rgba(8,26,72,0.48);border:1px solid rgba(40,110,220,0.14);
+  border-radius:2px;color:rgba(90,160,255,0.65);font-family:'Share Tech Mono',monospace;font-size:6.5px;
+  cursor:pointer;letter-spacing:.07em;transition:all .18s;text-align:center;}
+.det-btn:hover{border-color:rgba(60,140,255,0.35);color:#88b8f8;background:rgba(16,52,150,0.4);}
+
+/* Data overlay bits */
+.data-bits{position:absolute;right:32%;top:34%;z-index:8;pointer-events:none;}
+.dbit{font-family:'Share Tech Mono',monospace;font-size:6px;color:rgba(40,100,200,.22);margin-bottom:8px;animation:dfade 5s ease-in-out infinite;}
+.dbit:nth-child(2){animation-delay:1.2s;}.dbit:nth-child(3){animation-delay:2.5s;}.dbit:nth-child(4){animation-delay:3.8s;}
+@keyframes dfade{0%,100%{opacity:.16;}50%{opacity:.4;}}
+
+@media(max-width:900px){
+  #panel-pipeline,#panel-actions,.data-bits{display:none;}
+  #comms-bar,#quick-chips,#speech-wrap,#chat-history,#aura-status{left:4%;right:4%;}
+}
+</style>
 </head>
 <body>
-  <div class="vignette"></div>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script>
-    // Scene
-    const scene = new THREE.Scene();
-    // Camera (POV style)
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(0, 1.6, 5); // human eye height feel
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    document.body.appendChild(renderer.domElement);
-    // Ambient + glow lighting
-    const ambient = new THREE.AmbientLight(0x222222);
-    scene.add(ambient);
-    const pointLight = new THREE.PointLight(0x00ffff, 2, 50);
-    pointLight.position.set(0, 3, 2);
-    scene.add(pointLight);
-    // AI Core (floating hologram)
-    const coreGeometry = new THREE.SphereGeometry(1, 32, 32);
-    const coreMaterial = new THREE.MeshStandardMaterial({
-      color: 0x00ffff,
-      emissive: 0x00ffff,
-      emissiveIntensity: 1,
-      wireframe: true
-    });
-    const aiCore = new THREE.Mesh(coreGeometry, coreMaterial);
-    scene.add(aiCore);
-    // Particle field (digital space feel)
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particleCount = 1500;
-    const positions = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount * 3; i++) {
-      positions[i] = (Math.random() - 0.5) * 50;
+
+<div id="scene">
+
+  <!-- ═══ ROOM STRUCTURE ═══ -->
+  <div class="ceiling">
+    <div class="ceil-light ceil-light-1"></div>
+    <div class="ceil-light ceil-light-2"></div>
+  </div>
+  <div class="ceil-coffer"><div class="ceil-coffer-inner"></div></div>
+
+  <!-- Sky & window zone -->
+  <div class="window-zone">
+    <div class="sky-bg"></div>
+    <div class="sky-horizon"></div>
+    <!-- NYC Skyline & Brooklyn Bridge drawn by canvas -->
+    <canvas id="skyline-cv" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+  </div>
+
+  <!-- Window frames -->
+  <div class="win-frame-top"></div>
+  <div class="win-frame-left"></div>
+  <div class="win-frame-right"></div>
+  <div class="win-mullion"></div>
+  <div class="win-rail-h"></div>
+
+  <!-- Walls -->
+  <div class="wall-left"></div>
+  <div class="wall-back">
+    <!-- Panel seams -->
+    <div class="panel-seam" style="left:22%;"></div>
+    <div class="panel-seam" style="left:44%;"></div>
+    <div class="panel-seam" style="left:66%;"></div>
+    <div class="panel-seam" style="left:88%;"></div>
+    <div class="panel-rail" style="top:40%;"></div>
+    <div class="panel-rail" style="top:80%;"></div>
+  </div>
+  <div class="wall-right"><div class="wood-grain"></div></div>
+
+  <!-- Second window (right wall) -->
+  <div class="win2-frame">
+    <div class="win2-sky"></div>
+    <div class="win2-figure"></div>
+  </div>
+
+  <!-- Sconce -->
+  <div class="sconce">
+    <div class="sconce-glow"></div>
+    <div class="sconce-back"></div>
+    <div class="sconce-arm"></div>
+  </div>
+
+  <!-- Floor -->
+  <div class="floor">
+    <div class="floor-shadow"></div>
+  </div>
+
+  <!-- ═══ DESK ═══ -->
+  <div class="desk">
+    <div class="desk-top-face">
+      <div class="desk-top-shine"></div>
+      <!-- Desk mat -->
+      <div class="desk-mat"></div>
+      <!-- AURA folder -->
+      <div class="aura-folder" onclick="openLeadList()" title="Lead Files">
+        <div class="folder-paper"></div>
+        <div class="folder-leather">
+          <div class="folder-text">AURA</div>
+        </div>
+      </div>
+      <!-- Water glass SVG -->
+      <svg class="water-glass" viewBox="0 0 24 42" fill="none">
+        <path d="M3 2 L6 40 L18 40 L21 2Z" fill="rgba(200,230,255,0.06)" stroke="rgba(200,230,255,0.25)" stroke-width="0.6"/>
+        <path d="M4.5 26 L6 40 L18 40 L19.5 26Z" fill="rgba(160,210,255,0.1)"/>
+        <ellipse cx="12" cy="2" rx="9" ry="1.5" fill="rgba(200,230,255,0.1)"/>
+      </svg>
+    </div>
+    <div class="desk-front"></div>
+  </div>
+
+  <!-- ═══ DESK LAMP ═══ -->
+  <div style="position:absolute;left:3%;bottom:28%;width:8%;z-index:6;">
+    <!-- Lamp glow -->
+    <div style="position:absolute;top:-30%;left:-80%;width:260%;height:200%;
+      background:radial-gradient(ellipse at 40% 80%,rgba(255,200,80,0.12) 0%,transparent 60%);pointer-events:none;"></div>
+    <svg viewBox="0 0 70 110" fill="none" width="100%">
+      <!-- Shade -->
+      <path d="M8 62 L22 10 Q35 4 48 10 L62 62Z" fill="url(#lampG)"/>
+      <defs>
+        <linearGradient id="lampG" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#7a5218"/>
+          <stop offset="35%" stop-color="#d4980c"/>
+          <stop offset="65%" stop-color="#c08010"/>
+          <stop offset="100%" stop-color="#6a4410"/>
+        </linearGradient>
+      </defs>
+      <!-- Under-shade glow -->
+      <ellipse cx="35" cy="63" rx="27" ry="5" fill="rgba(255,200,80,0.2)"/>
+      <!-- Stem -->
+      <line x1="35" y1="63" x2="35" y2="98" stroke="#a07020" stroke-width="3"/>
+      <!-- Base -->
+      <ellipse cx="35" cy="99" rx="20" ry="7" fill="#8a5c18"/>
+      <ellipse cx="35" cy="96" rx="16" ry="5" fill="#c08020"/>
+    </svg>
+  </div>
+
+  <!-- ═══ AURA AGENT (detailed SVG portrait) ═══ -->
+  <div id="aura-agent">
+    <svg id="aura-svg" viewBox="0 0 400 560" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block;">
+      <defs>
+        <radialGradient id="skinG" cx="45%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#d4aa7a"/>
+          <stop offset="45%" stop-color="#c89a68"/>
+          <stop offset="80%" stop-color="#b88050"/>
+          <stop offset="100%" stop-color="#a06838"/>
+        </radialGradient>
+        <radialGradient id="headShad" cx="50%" cy="60%" r="55%">
+          <stop offset="0%" stop-color="rgba(0,0,0,0)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0.18)"/>
+        </radialGradient>
+        <linearGradient id="jacketG" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1a284e"/>
+          <stop offset="30%" stop-color="#1e3060"/>
+          <stop offset="70%" stop-color="#162445"/>
+          <stop offset="100%" stop-color="#0e1830"/>
+        </linearGradient>
+        <linearGradient id="neckG" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#a87848"/>
+          <stop offset="50%" stop-color="#c89868"/>
+          <stop offset="100%" stop-color="#a87848"/>
+        </linearGradient>
+        <linearGradient id="hairG" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3a1c0a"/>
+          <stop offset="40%" stop-color="#4e2810"/>
+          <stop offset="100%" stop-color="#2a1206"/>
+        </linearGradient>
+        <radialGradient id="hairSheen" cx="60%" cy="30%" r="50%">
+          <stop offset="0%" stop-color="rgba(80,40,16,0.6)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+        </radialGradient>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.4)"/>
+        </filter>
+        <filter id="faceSoft">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="0.3"/>
+        </filter>
+        <!-- Blue glow around AURA -->
+        <radialGradient id="auraGlow" cx="50%" cy="45%" r="50%">
+          <stop offset="0%" stop-color="rgba(30,80,200,0)"/>
+          <stop offset="70%" stop-color="rgba(20,60,180,0.03)"/>
+          <stop offset="100%" stop-color="rgba(10,40,140,0.08)"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Subtle aura glow -->
+      <ellipse cx="200" cy="240" rx="180" ry="200" fill="url(#auraGlow)"/>
+
+      <!-- ── BODY / JACKET ── -->
+      <!-- Main jacket body -->
+      <path d="M30 560 L30 320 Q50 290 100 275 L130 265 L200 280 L270 265 L300 275 Q350 290 370 320 L370 560Z"
+        fill="url(#jacketG)" filter="url(#softShadow)"/>
+      <!-- Left lapel -->
+      <path d="M163 272 L130 320 L200 295 Z" fill="#0c1828"/>
+      <!-- Right lapel -->
+      <path d="M237 272 L270 320 L200 295 Z" fill="#0c1828"/>
+      <!-- White blouse -->
+      <path d="M163 272 L200 295 L237 272 L228 310 L200 320 L172 310 Z"
+        fill="url(#blouseG)"/>
+      <defs>
+        <linearGradient id="blouseG" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#d8e8f0"/>
+          <stop offset="100%" stop-color="#c0d4e4"/>
+        </linearGradient>
+      </defs>
+      <!-- V-neck shadow line -->
+      <line x1="200" y1="295" x2="200" y2="318" stroke="rgba(100,140,180,0.3)" stroke-width="1"/>
+      <!-- Jacket shading / fold lines -->
+      <path d="M100 275 Q120 310 110 400 L100 560" stroke="rgba(0,0,0,0.12)" stroke-width="3" fill="none"/>
+      <path d="M300 275 Q280 310 290 400 L300 560" stroke="rgba(0,0,0,0.12)" stroke-width="3" fill="none"/>
+      <!-- Jacket button area -->
+      <path d="M185 335 L215 335 L212 420 L188 420 Z" fill="rgba(0,0,0,0.05)"/>
+
+      <!-- QF pin / badge -->
+      <rect x="245" y="290" width="28" height="18" rx="2" fill="rgba(200,160,50,0.85)"/>
+      <text x="259" y="302" text-anchor="middle" font-family="Georgia,serif" font-size="9" font-weight="bold" fill="#0c1828">QF</text>
+
+      <!-- Gold necklace -->
+      <path d="M168 258 Q200 268 232 258" stroke="rgba(200,165,55,0.6)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <circle cx="200" cy="268" r="4" fill="rgba(210,175,60,0.8)"/>
+
+      <!-- ── NECK ── -->
+      <rect x="172" y="238" width="56" height="48" rx="4" fill="url(#neckG)"/>
+      <!-- Neck shadow -->
+      <rect x="172" y="238" width="56" height="48" rx="4" fill="url(#headShad)" opacity="0.5"/>
+
+      <!-- ── HEAD ── -->
+      <!-- Head base shape -->
+      <ellipse cx="200" cy="162" rx="88" ry="100" fill="url(#skinG)" filter="url(#faceSoft)"/>
+      <!-- Jaw shadow -->
+      <ellipse cx="200" cy="225" rx="76" ry="40" fill="url(#headShad)"/>
+      <!-- Face highlight (light from window-left) -->
+      <ellipse cx="178" cy="148" rx="40" ry="50" fill="rgba(255,230,180,0.08)"/>
+
+      <!-- ── HAIR ── -->
+      <!-- Back hair mass -->
+      <ellipse cx="200" cy="148" rx="90" ry="76" fill="url(#hairG)"/>
+      <!-- Hair top cap -->
+      <path d="M112 162 Q115 72 200 68 Q285 72 288 162 Q270 120 200 118 Q130 120 112 162 Z" fill="url(#hairG)"/>
+      <!-- Left side hair (bob) -->
+      <path d="M112 162 Q100 195 104 240 Q108 265 128 268 Q118 245 122 210 Q120 185 130 172 Z" fill="url(#hairG)"/>
+      <!-- Right side hair (bob) -->
+      <path d="M288 162 Q300 195 296 240 Q292 265 272 268 Q282 245 278 210 Q280 185 270 172 Z" fill="url(#hairG)"/>
+      <!-- Hair sheen highlight -->
+      <ellipse cx="218" cy="128" rx="42" ry="22" fill="url(#hairSheen)" transform="rotate(-15,218,128)"/>
+      <!-- Hair part line -->
+      <path d="M186 76 Q188 110 192 128" stroke="rgba(40,18,6,0.3)" stroke-width="1.5" fill="none"/>
+
+      <!-- ── EARS ── -->
+      <ellipse cx="113" cy="180" rx="10" ry="14" fill="url(#skinG)"/>
+      <ellipse cx="113" cy="180" rx="6" ry="10" fill="rgba(180,120,70,0.4)"/>
+      <ellipse cx="287" cy="180" rx="10" ry="14" fill="url(#skinG)"/>
+      <ellipse cx="287" cy="180" rx="6" ry="10" fill="rgba(180,120,70,0.4)"/>
+
+      <!-- ── EYES ── -->
+      <!-- Left eye -->
+      <g id="eye-left">
+        <!-- Socket shadow -->
+        <ellipse cx="162" cy="168" rx="24" ry="16" fill="rgba(120,70,30,0.15)"/>
+        <!-- White -->
+        <ellipse cx="162" cy="168" rx="20" ry="11" fill="#f2ede4"/>
+        <!-- Iris -->
+        <circle cx="162" cy="168" r="9" fill="#3a2410"/>
+        <!-- Pupil -->
+        <circle cx="162" cy="168" r="5.5" fill="#1a0c06"/>
+        <!-- Iris detail -->
+        <circle cx="162" cy="168" r="8.5" fill="none" stroke="rgba(80,50,20,0.4)" stroke-width="1"/>
+        <!-- Catchlight -->
+        <circle cx="157" cy="163" r="3.5" fill="rgba(255,255,255,0.85)"/>
+        <circle cx="165" cy="171" r="1.5" fill="rgba(255,255,255,0.3)"/>
+        <!-- Top eyelid -->
+        <path d="M142 164 Q162 156 182 164" stroke="#1e0e08" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Lashes -->
+        <path d="M142 164 Q152 159 162 158 Q172 159 182 164" stroke="#180a04" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <!-- Bottom eyelid -->
+        <path d="M143 172 Q162 178 181 172" stroke="rgba(160,100,60,0.35)" stroke-width="1" fill="none"/>
+      </g>
+      <!-- Right eye -->
+      <g id="eye-right">
+        <ellipse cx="238" cy="168" rx="24" ry="16" fill="rgba(120,70,30,0.15)"/>
+        <ellipse cx="238" cy="168" rx="20" ry="11" fill="#f2ede4"/>
+        <circle cx="238" cy="168" r="9" fill="#3a2410"/>
+        <circle cx="238" cy="168" r="5.5" fill="#1a0c06"/>
+        <circle cx="238" cy="168" r="8.5" fill="none" stroke="rgba(80,50,20,0.4)" stroke-width="1"/>
+        <circle cx="233" cy="163" r="3.5" fill="rgba(255,255,255,0.85)"/>
+        <circle cx="241" cy="171" r="1.5" fill="rgba(255,255,255,0.3)"/>
+        <path d="M218 164 Q238 156 258 164" stroke="#1e0e08" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M218 164 Q228 159 238 158 Q248 159 258 164" stroke="#180a04" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path d="M219 172 Q238 178 257 172" stroke="rgba(160,100,60,0.35)" stroke-width="1" fill="none"/>
+      </g>
+
+      <!-- Eyebrows -->
+      <path d="M138 148 Q162 140 186 148" stroke="#2e1808" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M214 148 Q238 140 262 148" stroke="#2e1808" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+      <!-- ── NOSE ── -->
+      <path d="M194 176 Q192 198 186 206 Q194 210 200 208 Q206 210 214 206 Q208 198 206 176"
+        stroke="rgba(140,80,40,0.35)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <!-- Nostril shadows -->
+      <ellipse cx="189" cy="207" rx="6" ry="4" fill="rgba(120,60,30,0.2)"/>
+      <ellipse cx="211" cy="207" rx="6" ry="4" fill="rgba(120,60,30,0.2)"/>
+
+      <!-- ── MOUTH / SMILE ── -->
+      <!-- Upper lip -->
+      <path d="M172 226 Q186 220 200 223 Q214 220 228 226 Q218 232 200 231 Q182 232 172 226 Z"
+        fill="rgba(190,95,75,0.7)"/>
+      <!-- Lower lip -->
+      <path d="M172 226 Q200 240 228 226 Q218 234 200 236 Q182 234 172 226 Z"
+        fill="rgba(200,105,80,0.65)"/>
+      <!-- Smile line -->
+      <path d="M172 226 Q200 240 228 226" stroke="rgba(160,65,50,0.5)" stroke-width="1" fill="none"/>
+      <!-- Corner dimples -->
+      <circle cx="172" cy="226" r="2.5" fill="rgba(170,90,60,0.25)"/>
+      <circle cx="228" cy="226" r="2.5" fill="rgba(170,90,60,0.25)"/>
+
+      <!-- ── HANDS (folded on desk) ── -->
+      <!-- Left hand -->
+      <path d="M80 520 Q90 490 120 480 Q150 472 170 480 Q175 495 165 510 Q145 520 120 528 Q95 535 80 520 Z"
+        fill="url(#skinG)" opacity="0.9"/>
+      <!-- Ring on left hand -->
+      <path d="M142 508 Q146 505 150 508 Q146 512 142 508Z" stroke="rgba(210,180,60,0.7)" stroke-width="1.5" fill="none"/>
+      <!-- Right hand on top -->
+      <path d="M160 510 Q172 482 204 475 Q232 470 250 480 Q255 495 245 510 Q224 522 195 526 Q168 530 160 510 Z"
+        fill="url(#skinG)" opacity="0.9"/>
+      <!-- Finger details -->
+      <path d="M180 510 Q185 498 192 495" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" fill="none"/>
+      <path d="M196 508 Q200 496 207 493" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" fill="none"/>
+      <path d="M212 505 Q215 494 222 492" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" fill="none"/>
+      <!-- White shirt cuffs -->
+      <path d="M75 520 Q78 535 95 540 L80 545 Q62 540 65 522 Z" fill="#c8d8e8"/>
+      <path d="M255 510 Q260 525 275 528 L265 535 Q248 532 245 515 Z" fill="#c8d8e8"/>
+    </svg>
+  </div>
+
+  <!-- ═══ MONITOR ═══ -->
+  <div id="monitor-wrap">
+    <div class="monitor-screen">
+      <div class="monitor-bezel">
+        <div class="monitor-content">
+          <div class="mon-ui" id="mon-ui">
+            <!-- Left: leads + chart -->
+            <div style="position:absolute;left:0;top:0;bottom:0;width:58%;padding:6px;">
+              <div class="mon-header">
+                <span class="mon-logo">QUANTUM FINANCIAL</span>
+                <span class="mon-sep">|</span>
+                <span class="mon-tag">AURA AI Chatbot</span>
+                <div class="mon-live"></div>
+              </div>
+              <div id="mon-leads"></div>
+              <div class="mon-chart" id="mon-chart"></div>
+            </div>
+            <!-- Right: chat panel -->
+            <div class="mon-chat-panel">
+              <div class="mcp-title">Chat Prompt</div>
+              <div class="mcp-msg" id="mcp-msg1">Your pipeline has strong momentum. Focus on Okafor for immediate close.</div>
+              <div class="mcp-msg" style="background:rgba(40,80,180,0.15);border-left:1px solid rgba(80,140,255,0.3);" id="mcp-msg2">Reviewing active leads…</div>
+              <div class="mcp-input">Type message...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mon-stand"></div>
+    <div class="mon-base"></div>
+  </div>
+
+  <!-- ═══ FLOATING PANELS ═══ -->
+  <div class="holo-float" id="panel-pipeline">
+    <div class="holo-glass">
+      <div class="h-title"><div class="h-dot"></div>PIPELINE</div>
+      <div id="pipeline-bars"></div>
+    </div>
+  </div>
+
+  <div class="holo-float" id="panel-actions">
+    <div class="holo-glass">
+      <div class="h-title"><div class="h-dot" style="background:#f59e0b;"></div>ACTIONS</div>
+      <button class="holo-btn" onclick="openIntake()"><span class="b-ic">⊕</span><span class="b-lb">NEW LEAD</span><span class="b-st">INTAKE</span></button>
+      <button class="holo-btn" onclick="openLeadList()"><span class="b-ic">◈</span><span class="b-lb">ALL LEADS</span><span class="b-st" id="lc-btn">6</span></button>
+      <button class="holo-btn" onclick="qCmd('Who are my hottest leads right now?')"><span class="b-ic">◎</span><span class="b-lb">HOT LEADS</span><span class="b-st">RANK</span></button>
+      <button class="holo-btn" onclick="qCmd('Draft a follow-up email for my top lead')"><span class="b-ic">✉</span><span class="b-lb">DRAFT EMAIL</span><span class="b-st">AI</span></button>
+      <button class="holo-btn" onclick="qCmd('Revenue forecast for this quarter')"><span class="b-ic">◧</span><span class="b-lb">FORECAST</span><span class="b-st">Q3</span></button>
+      <button class="holo-btn" onclick="qCmd('Which leads need immediate follow-up?')"><span class="b-ic">⚡</span><span class="b-lb">FOLLOW-UP</span><span class="b-st">NOW</span></button>
+    </div>
+  </div>
+
+  <!-- Data bits -->
+  <div class="data-bits">
+    <div class="dbit">SYNC·LIVE</div>
+    <div class="dbit">LEADS·06</div>
+    <div class="dbit">AVG·78</div>
+    <div class="dbit">$287K</div>
+  </div>
+
+  <!-- Status -->
+  <div id="aura-status"><div class="ast-dot"></div><div class="ast-lbl" id="aura-lbl">AURA ACTIVE</div></div>
+
+  <!-- Chat history -->
+  <div id="chat-history"></div>
+
+  <!-- Speech bubble -->
+  <div id="speech-wrap">
+    <div id="speech-bubble">
+      <div id="sp-name">AURA — LEAD INTELLIGENCE</div>
+      <div id="sp-text"><span id="sp-inner"></span><span id="tcursor" style="display:none;"></span></div>
+    </div>
+  </div>
+
+  <!-- Quick chips -->
+  <div id="quick-chips">
+    <div class="chip" onclick="qCmd('Who is most likely to close this week?')">CLOSE PROB</div>
+    <div class="chip" onclick="qCmd('Full pipeline summary')">PIPELINE</div>
+    <div class="chip" onclick="qCmd('What should I prioritize today?')">TODAY</div>
+    <div class="chip" onclick="qCmd('Draft LinkedIn outreach for top prospect')">LINKEDIN</div>
+    <div class="chip" onclick="qCmd('Which lead has highest conversion probability?')">CONVERT</div>
+  </div>
+
+  <!-- Comms bar -->
+  <div id="comms-bar">
+    <input id="comms-input" placeholder="Speak to AURA…" autocomplete="off" onkeydown="if(event.key==='Enter')sendMsg()">
+    <button id="comms-send" onclick="sendMsg()">TRANSMIT</button>
+  </div>
+
+</div><!-- /scene -->
+
+<!-- Overlays -->
+<div id="scanlines"></div>
+<div id="vignette"></div>
+<div id="lamp-ambient"></div>
+
+<!-- Notifications -->
+<div id="notifs"></div>
+
+<!-- ═══ MODALS ═══ -->
+<div id="lead-modal">
+  <div id="lead-box" class="modal-box">
+    <div class="mh"><div class="h-dot"></div><div class="mh-title">LEAD INTELLIGENCE FILES</div><button class="mh-close" onclick="closeMod('lead-modal')">⊗</button></div>
+    <div style="overflow:auto;max-height:440px;"><table id="lead-table"><thead><tr><th>SCORE</th><th>NAME</th><th>COMPANY</th><th>BUDGET</th><th>STAGE</th><th>SOURCE</th><th></th></tr></thead><tbody id="lead-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<div id="intake-modal">
+  <div id="intake-box" class="modal-box">
+    <div class="mh"><div class="h-dot" style="background:#f59e0b;"></div><div class="mh-title">LEAD INTAKE — AURA WILL SCORE &amp; QUALIFY</div><button class="mh-close" onclick="closeMod('intake-modal')">⊗</button></div>
+    <div class="ib-grid">
+      <div class="ib-f"><label>Full Name *</label><input id="ib-name" placeholder="John Smith"></div>
+      <div class="ib-f"><label>Company *</label><input id="ib-company" placeholder="Acme Corp"></div>
+      <div class="ib-f"><label>Email *</label><input id="ib-email" placeholder="john@acme.com"></div>
+      <div class="ib-f"><label>Phone</label><input id="ib-phone" placeholder="+1 212-555-0100"></div>
+      <div class="ib-f"><label>Job Title</label><input id="ib-title" placeholder="CEO / CMO"></div>
+      <div class="ib-f"><label>Budget</label><input id="ib-budget" placeholder="$25,000"></div>
+      <div class="ib-f ib-full"><label>Service Need</label><input id="ib-need" placeholder="Website, branding, video, podcast…"></div>
+      <div class="ib-f"><label>Industry</label><input id="ib-industry" placeholder="Finance / Real Estate"></div>
+      <div class="ib-f"><label>Source</label><select id="ib-source"><option>Website Form</option><option>LinkedIn</option><option>Referral</option><option>Cold Email</option><option>Google Ads</option><option>Instagram</option><option>Event</option></select></div>
+      <div class="ib-f ib-full"><label>Timeline / Notes</label><input id="ib-notes" placeholder="Q3 launch, deciding end of month…"></div>
+    </div>
+    <div class="ib-btns"><button class="ib-cancel" onclick="closeMod('intake-modal')">ABORT</button><button class="ib-submit" onclick="submitLead()">◈ SCORE, QUALIFY &amp; DEPLOY</button></div>
+  </div>
+</div>
+
+<div id="detail-modal">
+  <div id="detail-box" class="modal-box">
+    <div class="mh"><div class="h-dot"></div><div class="mh-title" id="det-title">LEAD PROFILE</div><button class="mh-close" onclick="closeMod('detail-modal')">⊗</button></div>
+    <div class="dsh">
+      <div class="dsc" id="dsc"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="3"/><circle id="det-arc" cx="26" cy="26" r="22" fill="none" stroke="#3a8ffc" stroke-width="3" stroke-linecap="round" transform="rotate(-90 26 26)"/></svg><div class="dsc-n" id="det-score-n">—</div></div>
+      <div><div class="dn" id="det-name">—</div><div class="dco" id="det-co">—</div></div>
+    </div>
+    <div class="det-grid" id="det-grid"></div>
+    <div class="dnotes" id="det-notes"></div>
+    <div class="dst-wrap"><div style="font-size:6.5px;color:rgba(50,110,200,.45);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">STAGE CONTROL</div><select class="dst-sel" id="det-stage" onchange="updateStage()"></select></div>
+    <div class="det-acts">
+      <div class="det-btn" onclick="askAuraLead()">ASK AURA</div>
+      <div class="det-btn" onclick="draftEmail()">DRAFT EMAIL</div>
+      <div class="det-btn" onclick="draftSMS()">DRAFT SMS</div>
+      <div class="det-btn" onclick="reScore()">RE-SCORE</div>
+      <div class="det-btn" onclick="closeMod('detail-modal')">CLOSE</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+const INIT_LEADS=[
+  {id:1,name:"Marcus Chen",company:"Apex Ventures",email:"m.chen@apexventures.com",phone:"+1 212-555-0192",title:"Chief Investment Officer",industry:"Finance",revenue:"$50M+",score:92,stage:"Qualified",budget:"$85,000",need:"Full rebrand + web platform",timeline:"Q3 2026",source:"LinkedIn",notes:"Decision maker confirmed. High urgency.",lastContact:"2026-06-11"},
+  {id:2,name:"Sarah Williams",company:"NovaTech Solutions",email:"swilliams@novatech.io",phone:"+1 646-555-0284",title:"VP of Marketing",industry:"SaaS",revenue:"$10M–$50M",score:78,stage:"Discovery",budget:"$32,000",need:"Video production + social content",timeline:"Q3 2026",source:"Referral",notes:"Referred by Marcus Chen. Strong fit.",lastContact:"2026-06-10"},
+  {id:3,name:"James Okafor",company:"Crestline Capital",email:"j.okafor@crestlinecap.com",phone:"+1 917-555-0371",title:"Managing Director",industry:"Private Equity",revenue:"$100M+",score:88,stage:"Proposal",budget:"$120,000",need:"Brand + website + pitch deck",timeline:"Q2 2026",source:"Cold Email",notes:"Proposal deadline Friday. Top deal.",lastContact:"2026-06-11"},
+  {id:4,name:"Elena Vasquez",company:"Meridian Health",email:"evasquez@meridianhealth.org",phone:"+1 718-555-0448",title:"CMO",industry:"Healthcare",revenue:"$10M–$50M",score:65,stage:"Contacted",budget:"$18,000",need:"Podcast + YouTube channel",timeline:"Q4 2026",source:"Web Form",notes:"Needs budget approval.",lastContact:"2026-06-09"},
+  {id:5,name:"David Park",company:"Stratos AI",email:"dpark@stratosai.com",phone:"+1 332-555-0519",title:"CEO",industry:"AI",revenue:"$1M–$10M",score:71,stage:"New",budget:"$22,000",need:"Website + animation + QR",timeline:"Q3 2026",source:"Instagram",notes:"Strong inbound signal.",lastContact:"2026-06-11"},
+  {id:6,name:"Priya Sharma",company:"GoldPath Realty",email:"priya@goldpathrealty.com",phone:"+1 212-555-0633",title:"Director of Brand",industry:"Real Estate",revenue:"$50M+",score:54,stage:"New",budget:"$9,500",need:"Branding + blueprint",timeline:"Q4 2026",source:"Google Ads",notes:"Nurture track.",lastContact:"2026-06-10"},
+];
+const STAGES=["New","Contacted","Qualified","Discovery","Proposal","Negotiation","Closed Won","Closed Lost"];
+const SC={New:"#6366f1",Contacted:"#3b82f6",Qualified:"#0ea5e9",Discovery:"#f59e0b",Proposal:"#f97316",Negotiation:"#ef4444","Closed Won":"#22c55e","Closed Lost":"#6b7280"};
+const TH=["Scanning CRM database…","Cross-referencing leads…","Evaluating BANT signals…","Computing probability…","Analyzing pipeline…","Generating response…"];
+let leads=INIT_LEADS.map(l=>({...l}));
+let chat=[],thinking=false,selectedLead=null,thinkT=null,typeT=null;
+
+// ═══════════ SKYLINE CANVAS ═══════════
+function drawSkyline(){
+  const cv=document.getElementById('skyline-cv');
+  const par=cv.parentElement;
+  const W=par.offsetWidth,H=par.offsetHeight;
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+
+  // Pink-blue dusk clouds upper sky
+  const cloudG=ctx.createLinearGradient(0,0,W,H*0.4);
+  cloudG.addColorStop(0,'rgba(200,190,210,0.08)');
+  cloudG.addColorStop(0.5,'rgba(180,200,230,0.06)');
+  cloudG.addColorStop(1,'transparent');
+  ctx.fillStyle=cloudG;ctx.fillRect(0,0,W,H*0.45);
+
+  // Cloud shapes
+  [[W*0.1,H*0.12,W*0.25,H*0.06],[W*0.35,H*0.08,W*0.2,H*0.04],[W*0.55,H*0.15,W*0.18,H*0.05],[W*0.72,H*0.06,W*0.22,H*0.05]].forEach(([cx,cy,rw,rh])=>{
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,rw);
+    g.addColorStop(0,'rgba(220,225,240,0.15)');g.addColorStop(1,'transparent');
+    ctx.beginPath();ctx.ellipse(cx,cy,rw,rh,0,0,Math.PI*2);
+    ctx.fillStyle=g;ctx.fill();
+  });
+
+  // Stars (upper portion)
+  for(let i=0;i<60;i++){
+    ctx.beginPath();ctx.arc(Math.random()*W,Math.random()*H*0.35,Math.random()*0.8+0.2,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.5+0.1})`;ctx.fill();
+  }
+
+  // Horizon warm glow (city lights)
+  const hg=ctx.createLinearGradient(0,H*0.6,0,H);
+  hg.addColorStop(0,'rgba(200,160,100,0)');
+  hg.addColorStop(0.4,'rgba(180,130,80,0.06)');
+  hg.addColorStop(1,'rgba(150,100,60,0.12)');
+  ctx.fillStyle=hg;ctx.fillRect(0,H*0.55,W,H*0.45);
+
+  // East River
+  const riverY=H*0.74;
+  const riverG=ctx.createLinearGradient(0,riverY,0,riverY+H*0.08);
+  riverG.addColorStop(0,'rgba(50,80,130,0.5)');
+  riverG.addColorStop(0.5,'rgba(40,65,110,0.6)');
+  riverG.addColorStop(1,'rgba(30,50,90,0.4)');
+  ctx.fillStyle=riverG;ctx.fillRect(0,riverY,W,H*0.1);
+  // River shimmer
+  for(let i=0;i<8;i++){
+    const rx=Math.random()*W,ry=riverY+Math.random()*H*0.08;
+    ctx.beginPath();ctx.ellipse(rx,ry,Math.random()*W*0.04,2,0,0,Math.PI*2);
+    ctx.fillStyle=`rgba(200,210,240,${Math.random()*0.08+0.02})`;ctx.fill();
+  }
+
+  // MANHATTAN SKYLINE
+  function building(x,y,w,h,rows,cols,litR,hasAntenna){
+    const bg=ctx.createLinearGradient(x,y,x+w,y+h);
+    bg.addColorStop(0,'rgba(18,38,65,0.95)');
+    bg.addColorStop(0.4,'rgba(22,45,75,0.95)');
+    bg.addColorStop(1,'rgba(14,30,55,0.95)');
+    ctx.fillStyle=bg;ctx.fillRect(x,y,w,h);
+    // Windows
+    const ww=Math.max(2,w/(cols*2.8)),wh=Math.max(3,h/(rows*2.8));
+    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+      if(Math.random()<litR){
+        const wx=x+(c+0.5)*w/cols-ww/2,wy=y+(r+0.5)*h/rows-wh/2;
+        const warm=Math.random()>0.28;
+        ctx.fillStyle=warm?`rgba(255,215,100,${0.38+Math.random()*0.42})`:`rgba(140,195,255,${0.28+Math.random()*0.32})`;
+        ctx.fillRect(wx,wy,ww*0.75,wh*0.75);
+      }
     }
-    particlesGeometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(positions, 3)
-    );
-    const particlesMaterial = new THREE.PointsMaterial({
-      color: 0x00ffff,
-      size: 0.05
+    if(hasAntenna){ctx.strokeStyle='rgba(60,90,140,0.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x+w/2,y);ctx.lineTo(x+w/2,y-h*0.15);ctx.stroke();}
+  }
+
+  // Left-side buildings (Lower Manhattan / Battery Park)
+  const bBase=riverY;
+  const bldgs=[
+    [0.03,0.62,0.022,0.12,7,2,0.62,false],[0.055,0.55,0.018,0.19,9,2,0.70,true],
+    [0.076,0.48,0.028,0.26,12,3,0.75,true], // WTC-like
+    [0.107,0.52,0.020,0.22,9,2,0.68,false],[0.13,0.58,0.022,0.16,8,2,0.60,false],
+    [0.155,0.50,0.024,0.24,11,3,0.65,false],[0.182,0.55,0.019,0.19,9,2,0.62,false],
+    [0.204,0.52,0.021,0.22,10,2,0.67,false],[0.228,0.57,0.026,0.17,8,3,0.60,false],
+    [0.257,0.49,0.020,0.25,11,2,0.70,false],[0.280,0.54,0.018,0.20,9,2,0.63,false],
+    [0.300,0.51,0.023,0.23,10,3,0.66,false],[0.326,0.56,0.020,0.18,8,2,0.58,false],
+    [0.349,0.52,0.024,0.22,10,2,0.65,false],[0.376,0.55,0.019,0.19,9,2,0.60,false],
+    [0.398,0.50,0.022,0.24,11,3,0.68,false],[0.423,0.53,0.026,0.21,9,3,0.62,false],
+    [0.452,0.48,0.020,0.26,12,2,0.72,true],[0.475,0.54,0.018,0.20,9,2,0.60,false],
+  ];
+  bldgs.forEach(([bx,by,bw,bh,rows,cols,lit,ant])=>{
+    building(bx*W,by*H-bBase*0,bw*W,bh*H,rows,cols,lit,ant);
+  });
+
+  // BROOKLYN BRIDGE
+  const bbX=W*0.5,bbW=W*0.28,bbDeck=H*0.76;
+  // Bridge deck
+  ctx.strokeStyle='rgba(40,65,100,0.9)';ctx.lineWidth=3.5;
+  ctx.beginPath();ctx.moveTo(bbX,bbDeck);ctx.lineTo(bbX+bbW,bbDeck);ctx.stroke();
+  // Towers
+  const t1x=bbX+bbW*0.28,t2x=bbX+bbW*0.72,tTop=H*0.3;
+  [[t1x,tTop],[t2x,tTop]].forEach(([tx,ty])=>{
+    // Tower body
+    ctx.fillStyle='rgba(32,52,82,0.95)';
+    ctx.fillRect(tx-6,ty,12,bbDeck-ty);
+    // Gothic arches
+    [0.28,0.42].forEach(yf=>{
+      const ay=ty+(bbDeck-ty)*yf;
+      ctx.strokeStyle='rgba(50,80,120,0.7)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(tx,ay+14,8,Math.PI,0,false);ctx.stroke();
     });
-    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particles);
-    // Mouse movement (POV drift feel)
-    let mouseX = 0;
-    let mouseY = 0;
-    document.addEventListener("mousemove", (event) => {
-      mouseX = (event.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (event.clientY / window.innerHeight - 0.5) * 2;
-    });
-    // Animation loop
-    function animate() {
-      requestAnimationFrame(animate);
-      // AI core rotation + pulse
-      aiCore.rotation.y += 0.01;
-      aiCore.rotation.x += 0.005;
-      aiCore.scale.setScalar(1 + Math.sin(Date.now() * 0.002) * 0.1);
-      // camera subtle POV movement
-      camera.position.x += (mouseX - camera.position.x) * 0.02;
-      camera.position.y = 1.6 + mouseY * 0.3;
-      camera.lookAt(0, 0, 0);
-      // particle rotation
-      particles.rotation.y += 0.0005;
-      renderer.render(scene, camera);
-    }
-    animate();
-    // Resize handling
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
+    // Top spires
+    ctx.fillStyle='rgba(38,60,95,0.9)';
+    ctx.beginPath();ctx.moveTo(tx-5,ty);ctx.lineTo(tx+5,ty);ctx.lineTo(tx,ty-14);ctx.fill();
+  });
+  // Main cables
+  ctx.strokeStyle='rgba(50,80,130,0.55)';ctx.lineWidth=2;
+  [[bbX,bbDeck,t1x,tTop,bbX+bbW,bbDeck],[bbX+3,bbDeck-4,t2x,tTop,bbX+bbW+3,bbDeck-4]].forEach(([x1,y1,cx2,cy2,x2,y2])=>{
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(cx2,cy2,x2,y2);ctx.stroke();
+  });
+  // Vertical suspenders
+  ctx.strokeStyle='rgba(50,80,130,0.25)';ctx.lineWidth=0.7;
+  for(let i=0;i<24;i++){
+    const sx=bbX+i*(bbW/24);
+    const prog=Math.abs(i/24-0.5)*2;
+    const t=i<12?t1x:t2x,tp=tTop;
+    const topY=tp+(bbDeck-tp)*prog*0.35;
+    ctx.beginPath();ctx.moveTo(sx,topY);ctx.lineTo(sx,bbDeck);ctx.stroke();
+  }
+  // Bridge lights
+  for(let i=0;i<18;i++){
+    const lx=bbX+i*(bbW/18);
+    ctx.beginPath();ctx.arc(lx,bbDeck-2,1.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,200,80,${0.3+Math.random()*0.3})`;ctx.fill();
+  }
+
+  // Foreground dark water edge
+  const waterFg=ctx.createLinearGradient(0,H*0.82,0,H);
+  waterFg.addColorStop(0,'rgba(15,25,45,0.3)');
+  waterFg.addColorStop(1,'rgba(8,15,28,0.8)');
+  ctx.fillStyle=waterFg;ctx.fillRect(0,H*0.82,W,H*0.18);
+}
+
+// ═══════════ MONITOR UI ═══════════
+function renderMonitor(){
+  const el=document.getElementById('mon-leads');if(!el)return;
+  el.innerHTML='';
+  [...leads].sort((a,b)=>b.score-a.score).slice(0,5).forEach(l=>{
+    const c=l.score>=80?'#00d870':l.score>=60?'#ffaa00':'#ff5555';
+    const d=document.createElement('div');d.className='mon-lead-row';
+    d.innerHTML=`<div class="m-score" style="border:1px solid ${c};color:${c};background:${c}18;">${l.score}</div><div class="m-name">${l.name.split(' ')[0]} ${l.name.split(' ')[1]?l.name.split(' ')[1][0]+'.':''}</div><div class="m-budget">${l.budget||'—'}</div><div class="m-sdot" style="background:${SC[l.stage]||'#555'};"></div>`;
+    el.appendChild(d);
+  });
+  const ce=document.getElementById('mon-chart');if(!ce)return;
+  const sc=[...leads].sort((a,b)=>a.id-b.id).map(l=>l.score);
+  const n=sc.length,sw=130,sh=22;
+  const pts=sc.map((s,i)=>`${i*(sw/(n-1))},${sh-(s/100)*sh}`).join(' ');
+  ce.innerHTML=`<svg width="100%" height="${sh}" viewBox="0 0 ${sw} ${sh}" preserveAspectRatio="none"><defs><linearGradient id="cg" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(0,120,255,.7)"/><stop offset="100%" stop-color="rgba(0,200,255,.5)"/></linearGradient></defs><polyline points="${pts}" fill="none" stroke="url(#cg)" stroke-width="1.5" stroke-linecap="round"/><polyline points="0,${sh} ${pts} ${(n-1)*(sw/(n-1))},${sh}" fill="rgba(0,100,220,.08)" stroke="none"/></svg>`;
+}
+
+function renderPipeline(){
+  const el=document.getElementById('pipeline-bars');if(!el)return;
+  el.innerHTML='';
+  STAGES.slice(0,6).forEach(s=>{
+    const n=leads.filter(l=>l.stage===s).length,p=Math.round(n/leads.length*100);
+    const d=document.createElement('div');d.className='pip-row';
+    d.innerHTML=`<div class="pip-lbl">${s.toUpperCase()}</div><div class="pip-bg"><div class="pip-fill" style="width:${p}%;background:${SC[s]};"></div></div><div class="pip-n">${n}</div>`;
+    el.appendChild(d);
+  });
+}
+
+function refreshUI(){document.getElementById('lc-btn').textContent=leads.length;renderMonitor();renderPipeline();}
+
+// ═══════════ SPEECH ═══════════
+function setMood(m){document.getElementById('aura-lbl').textContent={neutral:'AURA ACTIVE',thinking:'PROCESSING…',speaking:'RESPONDING'}[m]||'ACTIVE';}
+
+function typeText(txt,cb){
+  clearTimeout(typeT);
+  const el=document.getElementById('sp-inner'),cur=document.getElementById('tcursor');
+  cur.style.display='inline-block';el.innerHTML='';
+  const raw=txt.replace(/\*\*(.*?)\*\*/g,'$1');
+  let i=0;
+  function tick(){
+    if(i<=raw.length){
+      let out='',src=txt,pos=0,w=0;
+      while(w<i&&pos<src.length){
+        if(src[pos]==='*'&&src[pos+1]==='*'){const e=src.indexOf('**',pos+2);if(e!==-1){const wd=src.slice(pos+2,e);const sh=Math.min(wd.length,Math.max(0,i-w));if(sh>0)out+=`<strong>${wd.slice(0,sh)}</strong>`;w+=wd.length;pos=e+2;}else pos++;}
+        else{out+=src[pos];pos++;w++;}
+      }
+      el.innerHTML=out;i++;typeT=setTimeout(tick,16+Math.random()*10);
+    }else{cur.style.display='none';setMood('neutral');if(cb)cb();}
+  }
+  tick();
+}
+
+function showThink(){
+  clearInterval(thinkT);
+  const el=document.getElementById('sp-inner'),cur=document.getElementById('tcursor');
+  cur.style.display='none';let idx=0;
+  el.innerHTML=`<div class="think-row"><div class="td"></div><div class="td"></div><div class="td"></div><span class="tlbl" id="tl">${TH[0]}</span></div>`;
+  thinkT=setInterval(()=>{idx=(idx+1)%TH.length;const t=document.getElementById('tl');if(t)t.textContent=TH[idx];},850);
+}
+function hideThink(){clearInterval(thinkT);}
+
+// ═══════════ NOTIFICATIONS ═══════════
+function notify(title,text){
+  const d=document.createElement('div');d.className='notif';
+  d.innerHTML=`<div class="notif-t">◈ ${title}</div><div style="color:rgba(140,185,255,.7);font-size:7.5px;line-height:1.5;">${text}</div>`;
+  document.getElementById('notifs').appendChild(d);
+  setTimeout(()=>{d.style.transition='opacity .28s';d.style.opacity='0';setTimeout(()=>d.remove(),280);},4500);
+}
+
+// ═══════════ MODALS ═══════════
+function openMod(id){document.getElementById(id).classList.add('open');}
+function closeMod(id){document.getElementById(id).classList.remove('open');}
+function openLeadList(){
+  const tb=document.getElementById('lead-tbody');tb.innerHTML='';
+  [...leads].sort((a,b)=>b.score-a.score).forEach(l=>{
+    const c=l.score>=80?'#00d870':l.score>=60?'#ffaa00':'#ff5555',sc=SC[l.stage]||'#666';
+    const tr=document.createElement('tr');tr.onclick=()=>{closeMod('lead-modal');openDetail(l);};
+    tr.innerHTML=`<td><div class="sc-cell" style="border:1px solid ${c};color:${c};background:${c}15;">${l.score}</div></td><td style="color:#a8d0ff;">${l.name}</td><td>${l.company}</td><td style="color:#00d870;">${l.budget||'—'}</td><td><span class="stg-badge" style="background:${sc}1a;color:${sc};border:1px solid ${sc}3a;">${l.stage}</span></td><td style="color:rgba(110,160,225,.55);">${l.source}</td><td><button onclick="event.stopPropagation();closeMod('lead-modal');askAbout(${l.id})" style="background:rgba(18,55,145,.3);border:1px solid rgba(45,105,220,.18);border-radius:2px;padding:2px 7px;color:rgba(85,145,255,.65);font-family:'Share Tech Mono',monospace;font-size:6.5px;cursor:pointer;">ASK AURA</button></td>`;
+    tb.appendChild(tr);
+  });
+  openMod('lead-modal');
+}
+function openIntake(){openMod('intake-modal');}
+
+function openDetail(l){
+  selectedLead=l;
+  const c=l.score>=80?'#00d870':l.score>=60?'#ffaa00':'#ff5555';
+  const circ=2*Math.PI*22;
+  document.getElementById('det-title').textContent=`PROFILE — ${l.name.toUpperCase()}`;
+  document.getElementById('det-name').textContent=l.name;
+  document.getElementById('det-co').textContent=`${l.title} · ${l.company}`;
+  const sn=document.getElementById('det-score-n');sn.textContent=l.score;sn.style.color=c;
+  const arc=document.getElementById('det-arc');arc.style.stroke=c;arc.style.strokeDasharray=circ;arc.style.strokeDashoffset=circ*(1-l.score/100);
+  const flds=[['Email',l.email],['Phone',l.phone||'—'],['Budget',l.budget||'—'],['Need',l.need||'—'],['Industry',l.industry||'—'],['Revenue',l.revenue||'—'],['Source',l.source],['Last Contact',l.lastContact],['Timeline',l.timeline||'—'],['Stage',l.stage]];
+  document.getElementById('det-grid').innerHTML=flds.map(([k,v])=>`<div class="det-cell"><div class="dcl">${k}</div><div class="dcv">${v}</div></div>`).join('');
+  const dn=document.getElementById('det-notes');if(l.notes){dn.textContent=l.notes;dn.style.display='block';}else dn.style.display='none';
+  const sel=document.getElementById('det-stage');sel.innerHTML=STAGES.map(s=>`<option ${s===l.stage?'selected':''}>${s}</option>`).join('');
+  openMod('detail-modal');
+}
+
+function updateStage(){if(!selectedLead)return;const ns=document.getElementById('det-stage').value;leads=leads.map(l=>l.id===selectedLead.id?{...l,stage:ns}:l);selectedLead={...selectedLead,stage:ns};refreshUI();notify('STAGE',`${selectedLead.name} → ${ns}`);}
+function askAuraLead(){if(!selectedLead)return;closeMod('detail-modal');qCmd(`Analyze ${selectedLead.name} from ${selectedLead.company}. Score:${selectedLead.score}, Stage:${selectedLead.stage}, Budget:${selectedLead.budget}. Best strategy?`);}
+function draftEmail(){if(!selectedLead)return;closeMod('detail-modal');qCmd(`Draft a personalized follow-up email for ${selectedLead.name}, ${selectedLead.title} at ${selectedLead.company}. Need: ${selectedLead.need}. Budget: ${selectedLead.budget}.`);}
+function draftSMS(){if(!selectedLead)return;closeMod('detail-modal');qCmd(`Draft a concise SMS follow-up (<160 chars) for ${selectedLead.name} at ${selectedLead.company}.`);}
+function askAbout(id){const l=leads.find(x=>x.id==id);if(l)qCmd(`Best approach for ${l.name} at ${l.company}? Score:${l.score}, Budget:${l.budget}, Stage:${l.stage}.`);}
+
+async function reScore(){
+  if(!selectedLead)return;closeMod('detail-modal');
+  notify('RE-SCORING',`Evaluating ${selectedLead.name}…`);setMood('thinking');showThink();
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,system:'Lead scoring AI. Respond ONLY with JSON, no markdown: {"score":<0-100>,"notes":"<one insight>"}',messages:[{role:'user',content:`Re-score: ${selectedLead.name}, ${selectedLead.title}, ${selectedLead.company}. Budget:${selectedLead.budget}, Need:${selectedLead.need}, Stage:${selectedLead.stage}`}]})});
+    const d=await r.json();const p=JSON.parse(d.content?.map(b=>b.text||'').join('').trim().replace(/```json|```/g,''));
+    leads=leads.map(l=>l.id===selectedLead.id?{...l,score:p.score,notes:p.notes}:l);
+    hideThink();refreshUI();setMood('speaking');typeText(`Re-scored **${selectedLead.name}**: **${p.score}/100**. ${p.notes}`);
+    notify('RE-SCORED',`${selectedLead.name}: ${p.score}/100`);
+  }catch(e){hideThink();setMood('speaking');typeText('Re-scoring unavailable.');}
+}
+
+async function submitLead(){
+  const name=document.getElementById('ib-name').value.trim();
+  const company=document.getElementById('ib-company').value.trim();
+  const email=document.getElementById('ib-email').value.trim();
+  if(!name||!company||!email){notify('ERROR','Name, Company and Email required.');return;}
+  closeMod('intake-modal');notify('PROCESSING','AURA is scoring your lead…');
+  setMood('thinking');showThink();
+  const lead={id:Date.now(),name,company,email,
+    phone:document.getElementById('ib-phone').value,title:document.getElementById('ib-title').value,
+    budget:document.getElementById('ib-budget').value,need:document.getElementById('ib-need').value,
+    source:document.getElementById('ib-source').value,industry:document.getElementById('ib-industry').value||'Unknown',
+    revenue:'Unknown',score:50,stage:'New',notes:'Pending.',lastContact:new Date().toISOString().slice(0,10),timeline:'TBD'};
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,system:'Lead scoring AI for Crestivo agency. Respond ONLY with valid JSON, no markdown: {"score":<0-100>,"stage":"<New|Contacted|Qualified>","notes":"<one strategic sentence>"}',messages:[{role:'user',content:`Score: Name:${name}, Company:${company}, Budget:${lead.budget||'unknown'}, Need:${lead.need||'unknown'}, Source:${lead.source}`}]})});
+    const d=await r.json();const p=JSON.parse(d.content?.map(b=>b.text||'').join('').trim().replace(/```json|```/g,''));
+    lead.score=p.score||55;lead.stage=p.stage||'New';lead.notes=p.notes||'Auto-scored.';
+  }catch(e){lead.score=55;}
+  ['ib-name','ib-company','ib-email','ib-phone','ib-title','ib-budget','ib-need','ib-industry'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  leads.unshift(lead);hideThink();refreshUI();setMood('speaking');
+  typeText(`New lead acquired. **${name}** from ${company} scored **${lead.score}/100**, placed in **${lead.stage}**. ${lead.notes} ${lead.score>=70?'Priority outreach within 48 hours.':'Added to nurture track.'}`);
+  notify('LEAD SCORED',`${name} — ${lead.score}/100`);
+}
+
+// ═══════════ AI CHAT ═══════════
+function buildSys(){
+  const pip=STAGES.map(s=>`${s}:${leads.filter(l=>l.stage===s).length}`).join(', ');
+  const val=leads.reduce((s,l)=>s+(parseInt((l.budget||'0').replace(/[$,+]/g,''))||0),0);
+  return `You are AURA — AI Lead Intelligence Specialist for Crestivo, a full-service marketing and technology agency in New York. You appear as a professional digital human at an executive Manhattan desk. Speak like a Wall Street executive who deeply understands digital marketing and sales strategy.
+
+LIVE DATA: ${pip} | Total: $${(val/1000).toFixed(0)}K
+LEADS:\n${leads.map(l=>`${l.name} | ${l.company} | ${l.title} | Score:${l.score} | Stage:${l.stage} | Budget:${l.budget} | Need:${l.need} | Last:${l.lastContact}`).join('\n')}
+
+RULES: First person. Real names & data. Max 110 words unless drafting email/SMS. **Bold** names and numbers. Full drafts include Subject line.`;
+}
+
+function addUserBubble(t){const h=document.getElementById('chat-history');const d=document.createElement('div');d.className='ch-user';d.textContent=t;h.appendChild(d);h.scrollTop=h.scrollHeight;}
+
+async function qCmd(text){
+  if(thinking)return;
+  addUserBubble(text);chat.push({role:'user',content:text});
+  thinking=true;setMood('thinking');showThink();
+  const msgs=chat.slice(-10).map(m=>({role:m.role,content:m.content}));
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:buildSys(),messages:msgs})});
+    const d=await r.json();const reply=d.content?.map(b=>b.text||'').join('')||'Signal lost.';
+    chat.push({role:'assistant',content:reply});
+    hideThink();setMood('speaking');typeText(reply);
+    // Update monitor chat panel
+    const m1=document.getElementById('mcp-msg1');if(m1)m1.textContent=reply.slice(0,80)+'…';
+  }catch(e){hideThink();setMood('speaking');typeText('Connection lost. Please retry.');}
+  finally{thinking=false;}
+}
+
+function sendMsg(){const i=document.getElementById('comms-input');const t=i.value.trim();if(!t||thinking)return;i.value='';qCmd(t);}
+
+// ═══════════ PARALLAX ═══════════
+document.addEventListener('mousemove',e=>{
+  const mx=(e.clientX/window.innerWidth-0.5),my=(e.clientY/window.innerHeight-0.5);
+  const sky=document.getElementById('skyline-cv');if(sky)sky.style.transform=`translate(${mx*-8}px,${my*-3}px) scale(1.03)`;
+  const ag=document.getElementById('aura-agent');if(ag)ag.style.transform=`translateX(${mx*4}px) translateY(${my*2}px)`;
+  const mon=document.getElementById('monitor-wrap');if(mon)mon.style.transform=`translateX(${mx*2.5}px) translateY(${my*1.5}px)`;
+});
+
+// ═══════════ INIT ═══════════
+window.addEventListener('resize',()=>drawSkyline());
+['lead-modal','intake-modal','detail-modal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)closeMod(id);});});
+
+drawSkyline();
+refreshUI();
+
+setTimeout(()=>{setMood('speaking');typeText(`Good evening. I'm **AURA**, your lead intelligence specialist. **6 active leads** totaling **$287K** in pipeline. **James Okafor** at Crestline Capital requires your attention — proposal due Friday. How shall we proceed?`);},700);
+setTimeout(()=>notify('SYSTEM ONLINE','Pipeline synced. 6 active leads loaded.'),1000);
+setTimeout(()=>notify('PRIORITY ALERT','James Okafor — $120K proposal deadline approaching.'),3000);
+</script>
 </body>
 </html>
